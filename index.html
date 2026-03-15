@@ -778,16 +778,14 @@ window.switchChannel = (ch, dmName) => {
 function loadDmList() {
   if (!currentUser) return;
   const list = document.getElementById('dm-list');
-  // Listen to DM conversations for this user
-  onSnapshot(collection(db, 'dms'), snap => {
+  // Listen to this user's own DM index — much more reliable than scanning all dms
+  onSnapshot(collection(db, 'users', currentUser.uid, 'dmList'), snap => {
     list.innerHTML = '';
     snap.forEach(d => {
-      const id = d.id;
-      if (!id.includes(currentUser.uid)) return;
-      const otherUid = id.replace(currentUser.uid, '').replace('_','');
       const data = d.data();
-      const otherName = data[otherUid + '_name'] || otherUid;
-      const otherPfp  = data[otherUid + '_pfp']  || '👤';
+      const otherUid  = data.uid;
+      const otherName = data.name || otherUid;
+      const otherPfp  = data.pfp  || '👤';
       const item = document.createElement('div');
       item.className = 'dm-item' + (activeChannel === otherUid ? ' active' : '');
       item.dataset.uid = otherUid;
@@ -810,20 +808,30 @@ window.startDm = async () => {
   errEl.textContent = '';
   if (!name) { errEl.textContent = 'Enter a username'; return; }
   if (name === currentUser.displayName) { errEl.textContent = "That's you!"; return; }
-  // Look up user by name
   const q = query(collection(db, 'users'), where('name', '==', name));
   const snap = await getDocs(q);
   if (snap.empty) { errEl.textContent = 'User not found'; return; }
-  const other = snap.docs[0].data();
-  const cid = dmId(currentUser.uid, other.uid);
-  const myPfp = localStorage.getItem('vcg_pfp_' + currentUser.uid) || '👤';
+  const other   = snap.docs[0].data();
+  const cid     = dmId(currentUser.uid, other.uid);
+  const myPfp   = localStorage.getItem('vcg_pfp_' + currentUser.uid) || '👤';
   const theirPfp = localStorage.getItem('vcg_pfp_' + other.uid) || '👤';
+
+  // Write the DM conversation doc
   await setDoc(doc(db, 'dms', cid), {
     [currentUser.uid + '_name']: currentUser.displayName,
     [currentUser.uid + '_pfp']:  myPfp,
     [other.uid + '_name']: other.name,
     [other.uid + '_pfp']:  theirPfp,
   }, { merge: true });
+
+  // Write to BOTH users' dmList so both can see it in their sidebar
+  await setDoc(doc(db, 'users', currentUser.uid, 'dmList', other.uid), {
+    uid: other.uid, name: other.name, pfp: theirPfp
+  });
+  await setDoc(doc(db, 'users', other.uid, 'dmList', currentUser.uid), {
+    uid: currentUser.uid, name: currentUser.displayName, pfp: myPfp
+  });
+
   document.getElementById('dm-overlay').classList.remove('open');
   switchChannel(other.uid, other.name);
 };
