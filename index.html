@@ -172,6 +172,87 @@
   }
   .proxy-badge span { color: #ffdd00; font-weight: 700; }
 
+  /* Chat */
+  .chat-wrap { display: flex; gap: 20px; height: calc(100vh - 160px); min-height: 400px; }
+  .chat-sidebar {
+    width: 200px; flex-shrink: 0; background: #160025;
+    border: 1px solid #3d0077; border-radius: 12px; padding: 16px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .chat-sidebar h3 { font-size: 0.75rem; color: #bf4dff; text-transform: uppercase; letter-spacing: 0.1em; }
+  .online-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
+  .online-user { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: #cc99ff; padding: 4px 6px; border-radius: 6px; }
+  .online-dot { width: 8px; height: 8px; background: #44ff88; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 6px #44ff88; }
+  .chat-main { flex: 1; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+  .chat-messages {
+    flex: 1; background: #160025; border: 1px solid #3d0077; border-radius: 12px;
+    padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;
+  }
+  .chat-msg { display: flex; flex-direction: column; gap: 2px; max-width: 70%; }
+  .chat-msg.mine { align-self: flex-end; align-items: flex-end; }
+  .chat-msg.theirs { align-self: flex-start; }
+  .msg-name { font-size: 0.68rem; color: #8855bb; padding: 0 6px; }
+  .msg-bubble { padding: 8px 14px; border-radius: 16px; font-size: 0.85rem; line-height: 1.5; word-break: break-word; }
+  .chat-msg.mine .msg-bubble { background: #6a00cc; color: #fff; border-bottom-right-radius: 4px; }
+  .chat-msg.theirs .msg-bubble { background: #1e0030; border: 1px solid #3d0077; color: #ddb0ff; border-bottom-left-radius: 4px; }
+  .msg-time { font-size: 0.62rem; color: #6a3388; padding: 0 6px; }
+  .chat-input-bar { display: flex; gap: 8px; }
+  .chat-input {
+    flex: 1; background: #1e0030; border: 1px solid #6a00cc; border-radius: 20px;
+    padding: 10px 18px; color: #fff; font-family: 'Comfortaa', cursive; font-size: 0.88rem; outline: none;
+  }
+  .chat-input:focus { border-color: #bf4dff; }
+  .chat-send {
+    background: #6a00cc; border: none; color: #fff; font-family: 'Comfortaa', cursive;
+    font-size: 0.82rem; font-weight: 700; padding: 10px 20px; border-radius: 20px;
+  }
+  .chat-send:hover { background: #bf4dff; }
+  /* Auth modal */
+  .auth-overlay {
+    display: none; position: fixed; inset: 0; background: #0d001599;
+    backdrop-filter: blur(6px); z-index: 200; align-items: center; justify-content: center;
+  }
+  .auth-overlay.open { display: flex; }
+  .auth-box {
+    background: #160025; border: 1px solid #6a00cc; border-radius: 16px;
+    padding: 36px; width: 340px; display: flex; flex-direction: column; gap: 14px;
+  }
+  .auth-box h2 { font-size: 1.1rem; color: #bf4dff; text-align: center; }
+  .auth-tabs { display: flex; gap: 8px; }
+  .auth-tab {
+    flex: 1; background: none; border: 1px solid #3d0077; color: #8855bb;
+    font-family: 'Comfortaa', cursive; font-size: 0.8rem; padding: 7px; border-radius: 8px;
+  }
+  .auth-tab.active { background: #6a00cc; border-color: #6a00cc; color: #fff; }
+  .auth-input {
+    background: #0d0015; border: 1px solid #3d0077; border-radius: 8px;
+    padding: 10px 14px; color: #fff; font-family: 'Comfortaa', cursive; font-size: 0.85rem; outline: none; width: 100%;
+  }
+  .auth-input:focus { border-color: #bf4dff; }
+  .auth-submit {
+    background: #6a00cc; border: none; color: #fff; font-family: 'Comfortaa', cursive;
+    font-size: 0.88rem; font-weight: 700; padding: 12px; border-radius: 8px; width: 100%;
+  }
+  .auth-submit:hover { background: #bf4dff; }
+  .auth-error { font-size: 0.78rem; color: #ff6688; text-align: center; min-height: 18px; }
+  .auth-user-bar {
+    display: flex; align-items: center; gap: 10px; padding: 8px 12px;
+    background: #1e0030; border: 1px solid #3d0077; border-radius: 20px; margin-bottom: 8px;
+  }
+  .auth-user-bar span { flex: 1; font-size: 0.8rem; color: #cc99ff; }
+  .auth-signout {
+    background: none; border: 1px solid #6a00cc; color: #8855bb;
+    font-family: 'Comfortaa', cursive; font-size: 0.72rem; padding: 4px 12px; border-radius: 20px;
+  }
+  .auth-signout:hover { background: #3d0077; color: #fff; }
+  .chat-gate { text-align: center; padding: 60px 20px; color: #8855bb; }
+  .chat-gate p { margin-bottom: 16px; font-size: 0.9rem; }
+  .chat-gate-btn {
+    background: #6a00cc; border: none; color: #fff; font-family: 'Comfortaa', cursive;
+    font-size: 0.88rem; font-weight: 700; padding: 12px 28px; border-radius: 20px;
+  }
+  .chat-gate-btn:hover { background: #bf4dff; }
+
   /* Custom cursor */
   *, *::before, *::after { cursor: none !important; }
   #cur-dot {
@@ -205,6 +286,7 @@
   <button class="tab active" id="tab-home" onclick="navigate('home')">Home</button>
   <button class="tab" id="tab-games" onclick="navigate('games')">Games</button>
   <button class="tab" id="tab-favs" onclick="navigate('favs')">Favorites</button>
+  <button class="tab" id="tab-chat" onclick="navigate('chat')">Chat</button>
   <button class="tab" id="tab-proxy" onclick="navigate('proxy')">Proxy</button>
   <button class="tab" id="tab-news" onclick="navigate('news')">News</button>
 </nav>
@@ -248,6 +330,48 @@
   <div class="empty" id="favs-empty" style="display:none">No favorites yet. Hit ⭐ on any game to add it!</div>
 </div>
 
+<div class="page" id="page-chat">
+  <div class="chat-gate" id="chat-gate">
+    <p>You need an account to chat with other players.</p>
+    <button class="chat-gate-btn" onclick="openAuth()">Sign In / Sign Up</button>
+  </div>
+  <div id="chat-app" style="display:none">
+    <div class="auth-user-bar">
+      <div class="online-dot"></div>
+      <span id="chat-username-display"></span>
+      <button class="auth-signout" onclick="signOut()">Sign Out</button>
+    </div>
+    <div class="chat-wrap">
+      <div class="chat-sidebar">
+        <h3>🟢 Online</h3>
+        <div class="online-list" id="online-list"></div>
+      </div>
+      <div class="chat-main">
+        <div class="chat-messages" id="chat-messages"></div>
+        <div class="chat-input-bar">
+          <input class="chat-input" id="chat-input" type="text" placeholder="Say something..." maxlength="300" onkeydown="if(event.key==='Enter')sendMsg()">
+          <button class="chat-send" onclick="sendMsg()">Send</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="auth-overlay" id="auth-overlay">
+  <div class="auth-box">
+    <h2>💬 Join the Chat</h2>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="atab-login" onclick="switchAuthTab('login')">Log In</button>
+      <button class="auth-tab" id="atab-signup" onclick="switchAuthTab('signup')">Sign Up</button>
+    </div>
+    <input class="auth-input" id="auth-username" placeholder="Username" maxlength="20" style="display:none">
+    <input class="auth-input" id="auth-email" type="email" placeholder="Email">
+    <input class="auth-input" id="auth-password" type="password" placeholder="Password" onkeydown="if(event.key==='Enter')submitAuth()">
+    <div class="auth-error" id="auth-error"></div>
+    <button class="auth-submit" onclick="submitAuth()">Continue</button>
+  </div>
+</div>
+
 <div class="page" id="page-proxy">
   <div class="proxy-container">
     <div class="proxy-icon">🌐</div>
@@ -263,15 +387,157 @@
 <div class="page" id="page-news">
   <h2>📢 News</h2>
   <div class="news-item">
+    <div class="news-date">March 15, 2026</div>
+    <div class="news-title">Beta 3.0</div>
+    <div class="news-body">Chat room added</div>
+  </div>
+  <div class="news-item">
     <div class="news-date">March 12, 2026</div>
     <div class="news-title">Beta 2.0</div>
     <div class="news-body">New proxy. Also some new games.</div>
+  </div>
   <div class="news-item">
     <div class="news-date">March 8, 2026</div>
     <div class="news-title">Site is now in beta! Beta 1.13</div>
     <div class="news-body">Massive update over 100 games hosted directly from VCG servers. No redirects, just click and play. News tab and the home tab are here!</div>
   </div>
 </div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut as fbSignOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, query, orderBy, limit, onSnapshot, serverTimestamp, doc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAegmF5e5H9O3FgPv2sCmIPcAVVQv33vQk",
+  authDomain: "verycoolgames493-1fbfd.firebaseapp.com",
+  projectId: "verycoolgames493-1fbfd",
+  storageBucket: "verycoolgames493-1fbfd.firebasestorage.app",
+  messagingSenderId: "756109320948",
+  appId: "1:756109320948:web:10463bfad338039211b4a1"
+};
+
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+let currentUser = null;
+let msgsUnsub   = null;
+let onlineUnsub = null;
+let authMode    = 'login';
+
+onAuthStateChanged(auth, user => {
+  currentUser = user;
+  if (user) {
+    document.getElementById('chat-gate').style.display = 'none';
+    document.getElementById('chat-app').style.display = 'block';
+    document.getElementById('chat-username-display').textContent = user.displayName || user.email;
+    document.getElementById('auth-overlay').classList.remove('open');
+    startChat();
+  } else {
+    document.getElementById('chat-gate').style.display = 'block';
+    document.getElementById('chat-app').style.display = 'none';
+    if (msgsUnsub)   { msgsUnsub();   msgsUnsub = null; }
+    if (onlineUnsub) { onlineUnsub(); onlineUnsub = null; }
+  }
+});
+
+window.openAuth = () => document.getElementById('auth-overlay').classList.add('open');
+
+window.switchAuthTab = mode => {
+  authMode = mode;
+  document.getElementById('atab-login').classList.toggle('active', mode === 'login');
+  document.getElementById('atab-signup').classList.toggle('active', mode === 'signup');
+  document.getElementById('auth-username').style.display = mode === 'signup' ? 'block' : 'none';
+  document.getElementById('auth-error').textContent = '';
+};
+
+window.submitAuth = async () => {
+  const email    = document.getElementById('auth-email').value.trim();
+  const password = document.getElementById('auth-password').value;
+  const username = document.getElementById('auth-username').value.trim();
+  const errEl    = document.getElementById('auth-error');
+  errEl.textContent = '';
+  try {
+    if (authMode === 'signup') {
+      if (!username) { errEl.textContent = 'Username is required'; return; }
+      const cred = await createUserWithEmailAndPassword(auth, email, password);
+      await updateProfile(cred.user, { displayName: username });
+      currentUser = cred.user;
+    } else {
+      await signInWithEmailAndPassword(auth, email, password);
+    }
+  } catch (e) {
+    errEl.textContent = e.message.replace('Firebase: ', '').replace(/\(.*\)\.?/, '').trim();
+  }
+};
+
+window.signOut = async () => {
+  if (currentUser) await deleteDoc(doc(db, 'online', currentUser.uid)).catch(() => {});
+  await fbSignOut(auth);
+};
+
+function startChat() {
+  if (!currentUser) return;
+
+  // Mark self as online, remove on close
+  const onlineRef = doc(db, 'online', currentUser.uid);
+  setDoc(onlineRef, { name: currentUser.displayName || currentUser.email, ts: serverTimestamp() });
+  window.addEventListener('beforeunload', () => deleteDoc(onlineRef));
+
+  // Online users listener
+  if (onlineUnsub) onlineUnsub();
+  onlineUnsub = onSnapshot(collection(db, 'online'), snap => {
+    const list = document.getElementById('online-list');
+    list.innerHTML = '';
+    snap.forEach(d => {
+      const div = document.createElement('div');
+      div.className = 'online-user';
+      div.innerHTML = `<div class="online-dot"></div><span>${d.data().name}</span>`;
+      list.appendChild(div);
+    });
+  });
+
+  // Messages listener
+  if (msgsUnsub) msgsUnsub();
+  const q = query(collection(db, 'messages'), orderBy('ts', 'asc'), limit(100));
+  msgsUnsub = onSnapshot(q, snap => {
+    const box = document.getElementById('chat-messages');
+    const wasAtBottom = box.scrollHeight - box.scrollTop <= box.clientHeight + 40;
+    box.innerHTML = '';
+    snap.forEach(d => {
+      const data = d.data();
+      const mine = data.uid === currentUser.uid;
+      const time = data.ts?.toDate ? data.ts.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+      const div = document.createElement('div');
+      div.className = 'chat-msg ' + (mine ? 'mine' : 'theirs');
+      div.innerHTML = `
+        ${!mine ? `<div class="msg-name">${esc(data.name)}</div>` : ''}
+        <div class="msg-bubble">${esc(data.text)}</div>
+        <div class="msg-time">${time}</div>`;
+      box.appendChild(div);
+    });
+    if (wasAtBottom) box.scrollTop = box.scrollHeight;
+  });
+}
+
+window.sendMsg = async () => {
+  if (!currentUser) return;
+  const input = document.getElementById('chat-input');
+  const text  = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  await addDoc(collection(db, 'messages'), {
+    text, uid: currentUser.uid,
+    name: currentUser.displayName || currentUser.email,
+    ts: serverTimestamp()
+  });
+};
+
+function esc(t) {
+  return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
 
 <script>
 // icon fields removed — probeIcon() auto-detects them now
@@ -625,7 +891,7 @@ function navigate(name) {
 window.addEventListener('popstate', () => {
   const path = location.pathname.replace(/^\//, '');
   if (!path || path === 'home') { showPage('home'); return; }
-  if (['games','favs','news','proxy'].includes(path)) { showPage(path); return; }
+  if (['games','favs','news','proxy','chat'].includes(path)) { showPage(path); return; }
   const g = games.find(x => x.folder === path);
   if (g) launchGame(g);
   else showPage('home');
@@ -694,7 +960,7 @@ window.addEventListener('popstate', () => {
 (function boot() {
   const path = location.pathname.replace(/^\//, '');
   if (!path || path === 'home') { showPage('home'); return; }
-  if (['games','favs','news','proxy'].includes(path)) { showPage(path); return; }
+  if (['games','favs','news','proxy','chat'].includes(path)) { showPage(path); return; }
   const g = games.find(x => x.folder === path);
   if (g) { launchGame(g); return; }
   showPage('home');
