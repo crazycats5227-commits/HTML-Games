@@ -589,9 +589,13 @@ onAuthStateChanged(auth, async user => {
   currentUser = user;
   updateNavAvatar();
   if (user) {
+    // Always upsert the user doc — handles new signups + old accounts with no doc
+    const name = user.displayName || user.email;
+    await setDoc(doc(db, 'users', user.uid), { name, uid: user.uid }, { merge: true });
+
     document.getElementById('acct-menu-signout').style.display = 'block';
     document.getElementById('acct-menu-signin').style.display = 'none';
-    document.getElementById('acct-menu-name').textContent = user.displayName || user.email;
+    document.getElementById('acct-menu-name').textContent = name;
     // Chat
     document.getElementById('chat-gate').style.display = 'none';
     document.getElementById('chat-app').style.display = 'block';
