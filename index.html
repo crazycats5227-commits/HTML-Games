@@ -176,13 +176,9 @@
   .chat-wrap { display: flex; gap: 20px; height: calc(100vh - 160px); min-height: 400px; }
   .chat-sidebar {
     width: 200px; flex-shrink: 0; background: #160025;
-    border: 1px solid #3d0077; border-radius: 12px; padding: 16px;
-    display: flex; flex-direction: column; gap: 10px;
+    border: 1px solid #3d0077; border-radius: 12px; padding: 12px;
+    display: flex; flex-direction: column; gap: 2px; overflow: hidden;
   }
-  .chat-sidebar h3 { font-size: 0.75rem; color: #bf4dff; text-transform: uppercase; letter-spacing: 0.1em; }
-  .online-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
-  .online-user { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: #cc99ff; padding: 4px 6px; border-radius: 6px; }
-  .online-dot { width: 8px; height: 8px; background: #44ff88; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 6px #44ff88; }
   .chat-main { flex: 1; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
   .chat-messages {
     flex: 1; background: #160025; border: 1px solid #3d0077; border-radius: 12px;
@@ -253,6 +249,96 @@
   }
   .chat-gate-btn:hover { background: #bf4dff; }
 
+  /* Account icon in nav */
+  .acct-btn {
+    background: none; border: 2px solid #6a00cc; border-radius: 50%;
+    width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center;
+    transition: border-color 0.2s, transform 0.2s; flex-shrink: 0;
+  }
+  .acct-btn:hover { border-color: #bf4dff; transform: scale(1.08); }
+  .acct-avatar {
+    width: 28px; height: 28px; border-radius: 50%; background: #3d0077;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem; line-height: 1; user-select: none;
+  }
+
+  /* Account dropdown */
+  .acct-menu {
+    display: none; position: fixed; top: 66px; right: 20px; z-index: 150;
+    background: #160025; border: 1px solid #6a00cc; border-radius: 12px;
+    padding: 8px; min-width: 200px; box-shadow: 0 8px 32px #00000088;
+  }
+  .acct-menu.open { display: block; }
+  .acct-menu-name { font-size: 0.78rem; color: #8855bb; padding: 6px 10px; }
+  .acct-menu-divider { height: 1px; background: #3d0077; margin: 4px 0; }
+  .acct-menu-item {
+    display: block; width: 100%; text-align: left; background: none; border: none;
+    color: #cc99ff; font-family: 'Comfortaa', cursive; font-size: 0.82rem;
+    padding: 8px 12px; border-radius: 8px; transition: background 0.15s;
+  }
+  .acct-menu-item:hover { background: #2a0050; }
+  .acct-menu-item.danger { color: #ff6688; }
+  .acct-menu-item.danger:hover { background: #3d0015; }
+
+  /* Account settings page */
+  .acct-page-gate { text-align: center; padding: 60px 20px; color: #8855bb; }
+  .acct-page-gate p { margin-bottom: 16px; font-size: 0.9rem; }
+  .acct-settings { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; max-width: 900px; }
+  .acct-card {
+    background: #160025; border: 1px solid #3d0077; border-radius: 12px;
+    padding: 22px; display: flex; flex-direction: column; gap: 12px;
+  }
+  .danger-card { border-color: #660022; }
+  .acct-card-title { font-size: 0.82rem; font-weight: 700; color: #bf4dff; text-transform: uppercase; letter-spacing: 0.08em; }
+  .acct-pfp-wrap { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .acct-pfp { width: 72px; height: 72px; border-radius: 50%; background: #3d0077; border: 2px solid #6a00cc; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; }
+  .acct-pfp-label { font-size: 0.72rem; color: #8855bb; }
+  .acct-pfp-options { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+  .pfp-opt {
+    width: 40px; height: 40px; border-radius: 50%; background: #2a0050; border: 2px solid #3d0077;
+    font-size: 1.3rem; display: flex; align-items: center; justify-content: center;
+    transition: border-color 0.2s, transform 0.15s;
+  }
+  .pfp-opt:hover { border-color: #bf4dff; transform: scale(1.15); }
+  .pfp-opt.selected { border-color: #bf4dff; box-shadow: 0 0 10px #bf4dff88; }
+  .acct-action-btn {
+    background: #3d0077; border: none; color: #eee; font-family: 'Comfortaa', cursive;
+    font-size: 0.82rem; padding: 10px 16px; border-radius: 8px; text-align: left;
+  }
+  .acct-action-btn:hover { background: #6a00cc; }
+  .danger-btn { background: #3d0015 !important; color: #ff6688 !important; }
+  .danger-btn:hover { background: #660022 !important; }
+  .acct-msg { font-size: 0.75rem; min-height: 16px; }
+  .acct-msg.ok { color: #44ff88; }
+  .acct-msg.err { color: #ff6688; }
+
+  /* Chat sidebar overhaul */
+  .chat-header {
+    background: #160025; border: 1px solid #3d0077; border-radius: 8px;
+    padding: 10px 16px; font-size: 0.85rem; font-weight: 700; color: #bf4dff; flex-shrink: 0;
+  }
+  .chat-channel {
+    padding: 9px 12px; border-radius: 8px; font-size: 0.82rem; color: #cc99ff;
+    cursor: pointer; transition: background 0.15s; font-weight: 700;
+  }
+  .chat-channel:hover { background: #2a0050; }
+  .chat-channel.active { background: #3d0077; color: #fff; }
+  .chat-sidebar-label { font-size: 0.65rem; color: #6a3388; text-transform: uppercase; letter-spacing: 0.12em; padding: 10px 12px 4px; }
+  .dm-list { display: flex; flex-direction: column; gap: 2px; flex: 1; overflow-y: auto; }
+  .dm-item {
+    padding: 8px 12px; border-radius: 8px; font-size: 0.8rem; color: #cc99ff;
+    cursor: pointer; transition: background 0.15s; display: flex; align-items: center; gap: 8px;
+  }
+  .dm-item:hover { background: #2a0050; }
+  .dm-item.active { background: #3d0077; color: #fff; }
+  .dm-item .dm-avatar { font-size: 1rem; }
+  .new-dm-btn {
+    background: none; border: 1px dashed #3d0077; color: #6a3388; font-family: 'Comfortaa', cursive;
+    font-size: 0.75rem; padding: 7px 12px; border-radius: 8px; margin-top: 6px;
+    transition: all 0.2s;
+  }
+  .new-dm-btn:hover { border-color: #bf4dff; color: #bf4dff; }
+
   /* Custom cursor */
   *, *::before, *::after { cursor: none !important; }
   #cur-dot {
@@ -289,7 +375,21 @@
   <button class="tab" id="tab-chat" onclick="navigate('chat')">Chat</button>
   <button class="tab" id="tab-proxy" onclick="navigate('proxy')">Proxy</button>
   <button class="tab" id="tab-news" onclick="navigate('news')">News</button>
+  <button class="acct-btn" id="nav-acct-btn" onclick="toggleAcctMenu()" title="Account">
+    <div class="acct-avatar" id="nav-avatar">?</div>
+  </button>
 </nav>
+
+<!-- Account dropdown menu -->
+<div class="acct-menu" id="acct-menu">
+  <div class="acct-menu-name" id="acct-menu-name">Not signed in</div>
+  <div class="acct-menu-divider"></div>
+  <button class="acct-menu-item" onclick="navigate('account');closeAcctMenu()">⚙️ Account Settings</button>
+  <button class="acct-menu-item" onclick="navigate('chat');closeAcctMenu()">💬 Chat</button>
+  <div class="acct-menu-divider"></div>
+  <button class="acct-menu-item danger" id="acct-menu-signout" onclick="signOut();closeAcctMenu()" style="display:none">🚪 Sign Out</button>
+  <button class="acct-menu-item" id="acct-menu-signin" onclick="openAuth();closeAcctMenu()">🔑 Sign In / Sign Up</button>
+</div>
 
 <div id="frame-wrap">
   <div class="frame-bar">
@@ -330,29 +430,84 @@
   <div class="empty" id="favs-empty" style="display:none">No favorites yet. Hit ⭐ on any game to add it!</div>
 </div>
 
+<div class="page" id="page-account">
+  <div class="acct-page-gate" id="acct-page-gate">
+    <p>Sign in to manage your account.</p>
+    <button class="chat-gate-btn" onclick="openAuth()">Sign In / Sign Up</button>
+  </div>
+  <div id="acct-page-app" style="display:none">
+    <h2>⚙️ Account Settings</h2>
+    <div class="acct-settings">
+
+      <div class="acct-card">
+        <div class="acct-pfp-wrap">
+          <div class="acct-pfp" id="settings-pfp">?</div>
+          <div class="acct-pfp-label">Profile Picture</div>
+        </div>
+        <div class="acct-pfp-options" id="pfp-options"></div>
+      </div>
+
+      <div class="acct-card">
+        <div class="acct-card-title">Change Username</div>
+        <input class="auth-input" id="new-username" placeholder="New username" maxlength="20">
+        <button class="acct-action-btn" onclick="changeUsername()">Save Username</button>
+        <div class="acct-msg" id="username-msg"></div>
+      </div>
+
+      <div class="acct-card">
+        <div class="acct-card-title">Change Password</div>
+        <input class="auth-input" id="new-password" type="password" placeholder="New password (min 6 chars)">
+        <button class="acct-action-btn" onclick="changePassword()">Save Password</button>
+        <div class="acct-msg" id="password-msg"></div>
+      </div>
+
+      <div class="acct-card danger-card">
+        <div class="acct-card-title" style="color:#ff6688">Danger Zone</div>
+        <button class="acct-action-btn danger-btn" onclick="signOut()">🚪 Sign Out</button>
+        <button class="acct-action-btn danger-btn" onclick="deleteAccount()">🗑️ Delete Account</button>
+        <div class="acct-msg" id="danger-msg"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 <div class="page" id="page-chat">
   <div class="chat-gate" id="chat-gate">
     <p>You need an account to chat with other players.</p>
     <button class="chat-gate-btn" onclick="openAuth()">Sign In / Sign Up</button>
   </div>
   <div id="chat-app" style="display:none">
-    <div class="auth-user-bar">
-      <div class="online-dot"></div>
-      <span id="chat-username-display"></span>
-      <button class="auth-signout" onclick="signOut()">Sign Out</button>
-    </div>
     <div class="chat-wrap">
       <div class="chat-sidebar">
-        <h3>🟢 Online</h3>
-        <div class="online-list" id="online-list"></div>
+        <div class="chat-channel active" id="ch-main" onclick="switchChannel('main')">💬 Main Chat</div>
+        <div class="chat-sidebar-label">Direct Messages</div>
+        <div class="dm-list" id="dm-list"></div>
+        <button class="new-dm-btn" onclick="openNewDm()">+ New DM</button>
       </div>
       <div class="chat-main">
+        <div class="chat-header">
+          <span id="chat-channel-title">💬 Main Chat</span>
+        </div>
         <div class="chat-messages" id="chat-messages"></div>
         <div class="chat-input-bar">
           <input class="chat-input" id="chat-input" type="text" placeholder="Say something..." maxlength="300" onkeydown="if(event.key==='Enter')sendMsg()">
           <button class="chat-send" onclick="sendMsg()">Send</button>
         </div>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- New DM modal -->
+<div class="auth-overlay" id="dm-overlay">
+  <div class="auth-box">
+    <h2>💬 New DM</h2>
+    <input class="auth-input" id="dm-username-input" placeholder="Enter exact username">
+    <div class="auth-error" id="dm-error"></div>
+    <div style="display:flex;gap:8px;">
+      <button class="auth-submit" style="background:#3d0077" onclick="document.getElementById('dm-overlay').classList.remove('open')">Cancel</button>
+      <button class="auth-submit" onclick="startDm()">Start DM</button>
     </div>
   </div>
 </div>
@@ -405,8 +560,8 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut as fbSignOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, query, orderBy, limit, onSnapshot, serverTimestamp, doc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut as fbSignOut, onAuthStateChanged, updateProfile, updatePassword, deleteUser, reauthenticateWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, query, orderBy, limit, onSnapshot, serverTimestamp, doc, setDoc, deleteDoc, getDoc, getDocs, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAegmF5e5H9O3FgPv2sCmIPcAVVQv33vQk",
@@ -421,29 +576,61 @@ const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db   = getFirestore(app);
 
+const PFP_OPTIONS = ['🐱','🐶','🐸','🦊','🐼','🐨','🦁','🐯','🐺','🤖','👾','🎮','🌙','⭐','🔥','💜'];
 let currentUser = null;
 let msgsUnsub   = null;
-let onlineUnsub = null;
 let authMode    = 'login';
+let activeChannel = 'main'; // 'main' or a DM uid
+let activeDmName  = '';
+let dmUnsubs = {};
 
-onAuthStateChanged(auth, user => {
+// ── Auth state ──
+onAuthStateChanged(auth, async user => {
   currentUser = user;
+  updateNavAvatar();
   if (user) {
+    document.getElementById('acct-menu-signout').style.display = 'block';
+    document.getElementById('acct-menu-signin').style.display = 'none';
+    document.getElementById('acct-menu-name').textContent = user.displayName || user.email;
+    // Chat
     document.getElementById('chat-gate').style.display = 'none';
     document.getElementById('chat-app').style.display = 'block';
-    document.getElementById('chat-username-display').textContent = user.displayName || user.email;
     document.getElementById('auth-overlay').classList.remove('open');
+    // Account page
+    document.getElementById('acct-page-gate').style.display = 'none';
+    document.getElementById('acct-page-app').style.display = 'block';
+    loadAccountSettings();
     startChat();
+    loadDmList();
   } else {
+    document.getElementById('acct-menu-signout').style.display = 'none';
+    document.getElementById('acct-menu-signin').style.display = 'block';
+    document.getElementById('acct-menu-name').textContent = 'Not signed in';
     document.getElementById('chat-gate').style.display = 'block';
     document.getElementById('chat-app').style.display = 'none';
-    if (msgsUnsub)   { msgsUnsub();   msgsUnsub = null; }
-    if (onlineUnsub) { onlineUnsub(); onlineUnsub = null; }
+    document.getElementById('acct-page-gate').style.display = 'block';
+    document.getElementById('acct-page-app').style.display = 'none';
+    if (msgsUnsub) { msgsUnsub(); msgsUnsub = null; }
   }
 });
 
-window.openAuth = () => document.getElementById('auth-overlay').classList.add('open');
+function updateNavAvatar() {
+  const el = document.getElementById('nav-avatar');
+  if (!currentUser) { el.textContent = '?'; return; }
+  const pfp = localStorage.getItem('vcg_pfp_' + currentUser.uid) || '👤';
+  el.textContent = pfp;
+}
 
+// ── Account menu ──
+window.toggleAcctMenu = () => document.getElementById('acct-menu').classList.toggle('open');
+window.closeAcctMenu  = () => document.getElementById('acct-menu').classList.remove('open');
+document.addEventListener('click', e => {
+  if (!e.target.closest('#acct-menu') && !e.target.closest('#nav-acct-btn'))
+    closeAcctMenu();
+});
+
+// ── Auth ──
+window.openAuth = () => document.getElementById('auth-overlay').classList.add('open');
 window.switchAuthTab = mode => {
   authMode = mode;
   document.getElementById('atab-login').classList.toggle('active', mode === 'login');
@@ -451,7 +638,6 @@ window.switchAuthTab = mode => {
   document.getElementById('auth-username').style.display = mode === 'signup' ? 'block' : 'none';
   document.getElementById('auth-error').textContent = '';
 };
-
 window.submitAuth = async () => {
   const email    = document.getElementById('auth-email').value.trim();
   const password = document.getElementById('auth-password').value;
@@ -463,53 +649,117 @@ window.submitAuth = async () => {
       if (!username) { errEl.textContent = 'Username is required'; return; }
       const cred = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(cred.user, { displayName: username });
-      currentUser = cred.user;
+      await setDoc(doc(db, 'users', cred.user.uid), { name: username, uid: cred.user.uid });
     } else {
       await signInWithEmailAndPassword(auth, email, password);
     }
   } catch (e) {
-    errEl.textContent = e.message.replace('Firebase: ', '').replace(/\(.*\)\.?/, '').trim();
+    errEl.textContent = e.message.replace('Firebase: ','').replace(/\(.*\)\.?/,'').trim();
   }
 };
-
 window.signOut = async () => {
-  if (currentUser) await deleteDoc(doc(db, 'online', currentUser.uid)).catch(() => {});
   await fbSignOut(auth);
 };
 
+// ── Account settings ──
+function loadAccountSettings() {
+  if (!currentUser) return;
+  const pfp = localStorage.getItem('vcg_pfp_' + currentUser.uid) || '👤';
+  document.getElementById('settings-pfp').textContent = pfp;
+  const opts = document.getElementById('pfp-options');
+  opts.innerHTML = '';
+  PFP_OPTIONS.forEach(emoji => {
+    const btn = document.createElement('button');
+    btn.className = 'pfp-opt' + (emoji === pfp ? ' selected' : '');
+    btn.textContent = emoji;
+    btn.onclick = () => {
+      localStorage.setItem('vcg_pfp_' + currentUser.uid, emoji);
+      document.getElementById('settings-pfp').textContent = emoji;
+      updateNavAvatar();
+      opts.querySelectorAll('.pfp-opt').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+    };
+    opts.appendChild(btn);
+  });
+}
+
+window.changeUsername = async () => {
+  const val = document.getElementById('new-username').value.trim();
+  const msg = document.getElementById('username-msg');
+  if (!val) { msg.className='acct-msg err'; msg.textContent='Enter a username'; return; }
+  try {
+    await updateProfile(currentUser, { displayName: val });
+    await setDoc(doc(db, 'users', currentUser.uid), { name: val, uid: currentUser.uid }, { merge: true });
+    document.getElementById('acct-menu-name').textContent = val;
+    msg.className='acct-msg ok'; msg.textContent='✓ Username updated!';
+  } catch(e) { msg.className='acct-msg err'; msg.textContent=e.message; }
+};
+
+window.changePassword = async () => {
+  const val = document.getElementById('new-password').value;
+  const msg = document.getElementById('password-msg');
+  if (val.length < 6) { msg.className='acct-msg err'; msg.textContent='Min 6 characters'; return; }
+  try {
+    await updatePassword(currentUser, val);
+    msg.className='acct-msg ok'; msg.textContent='✓ Password updated!';
+    document.getElementById('new-password').value = '';
+  } catch(e) {
+    if (e.code === 'auth/requires-recent-login') {
+      msg.className='acct-msg err'; msg.textContent='Please sign out and sign back in first.';
+    } else { msg.className='acct-msg err'; msg.textContent=e.message; }
+  }
+};
+
+window.deleteAccount = async () => {
+  if (!confirm('Are you sure? This permanently deletes your account and cannot be undone.')) return;
+  const msg = document.getElementById('danger-msg');
+  try {
+    await deleteDoc(doc(db, 'users', currentUser.uid));
+    await deleteUser(currentUser);
+  } catch(e) {
+    if (e.code === 'auth/requires-recent-login') {
+      msg.className='acct-msg err'; msg.textContent='Please sign out and sign back in first.';
+    } else { msg.className='acct-msg err'; msg.textContent=e.message; }
+  }
+};
+
+// ── Chat & DMs ──
+function dmId(uid1, uid2) {
+  return [uid1, uid2].sort().join('_');
+}
+
 function startChat() {
   if (!currentUser) return;
+  switchChannel('main');
+}
 
-  // Mark self as online, remove on close
-  const onlineRef = doc(db, 'online', currentUser.uid);
-  setDoc(onlineRef, { name: currentUser.displayName || currentUser.email, ts: serverTimestamp() });
-  window.addEventListener('beforeunload', () => deleteDoc(onlineRef));
+window.switchChannel = (ch, dmName) => {
+  activeChannel = ch;
+  activeDmName  = dmName || '';
+  if (msgsUnsub) { msgsUnsub(); msgsUnsub = null; }
 
-  // Online users listener
-  if (onlineUnsub) onlineUnsub();
-  onlineUnsub = onSnapshot(collection(db, 'online'), snap => {
-    const list = document.getElementById('online-list');
-    list.innerHTML = '';
-    snap.forEach(d => {
-      const div = document.createElement('div');
-      div.className = 'online-user';
-      div.innerHTML = `<div class="online-dot"></div><span>${d.data().name}</span>`;
-      list.appendChild(div);
-    });
+  // Update sidebar active state
+  document.getElementById('ch-main').classList.toggle('active', ch === 'main');
+  document.querySelectorAll('.dm-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.uid === ch);
   });
 
-  // Messages listener
-  if (msgsUnsub) msgsUnsub();
-  const q = query(collection(db, 'messages'), orderBy('ts', 'asc'), limit(100));
+  // Update header
+  document.getElementById('chat-channel-title').textContent =
+    ch === 'main' ? '💬 Main Chat' : `💬 DM — ${dmName || ch}`;
+
+  // Subscribe to messages
+  const colPath = ch === 'main' ? 'messages' : `dms/${dmId(currentUser.uid, ch)}/messages`;
+  const q = query(collection(db, colPath), orderBy('ts','asc'), limit(100));
   msgsUnsub = onSnapshot(q, snap => {
     const box = document.getElementById('chat-messages');
-    const wasAtBottom = box.scrollHeight - box.scrollTop <= box.clientHeight + 40;
+    const atBottom = box.scrollHeight - box.scrollTop <= box.clientHeight + 40;
     box.innerHTML = '';
     snap.forEach(d => {
       const data = d.data();
       const mine = data.uid === currentUser.uid;
-      const time = data.ts?.toDate ? data.ts.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
-      const div = document.createElement('div');
+      const time = data.ts?.toDate ? data.ts.toDate().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : '';
+      const div  = document.createElement('div');
       div.className = 'chat-msg ' + (mine ? 'mine' : 'theirs');
       div.innerHTML = `
         ${!mine ? `<div class="msg-name">${esc(data.name)}</div>` : ''}
@@ -517,9 +767,62 @@ function startChat() {
         <div class="msg-time">${time}</div>`;
       box.appendChild(div);
     });
-    if (wasAtBottom) box.scrollTop = box.scrollHeight;
+    if (atBottom) box.scrollTop = box.scrollHeight;
+  });
+};
+
+function loadDmList() {
+  if (!currentUser) return;
+  const list = document.getElementById('dm-list');
+  // Listen to DM conversations for this user
+  onSnapshot(collection(db, 'dms'), snap => {
+    list.innerHTML = '';
+    snap.forEach(d => {
+      const id = d.id;
+      if (!id.includes(currentUser.uid)) return;
+      const otherUid = id.replace(currentUser.uid, '').replace('_','');
+      const data = d.data();
+      const otherName = data[otherUid + '_name'] || otherUid;
+      const otherPfp  = data[otherUid + '_pfp']  || '👤';
+      const item = document.createElement('div');
+      item.className = 'dm-item' + (activeChannel === otherUid ? ' active' : '');
+      item.dataset.uid = otherUid;
+      item.innerHTML = `<span class="dm-avatar">${otherPfp}</span><span>${esc(otherName)}</span>`;
+      item.onclick = () => switchChannel(otherUid, otherName);
+      list.appendChild(item);
+    });
   });
 }
+
+window.openNewDm = () => {
+  document.getElementById('dm-username-input').value = '';
+  document.getElementById('dm-error').textContent = '';
+  document.getElementById('dm-overlay').classList.add('open');
+};
+
+window.startDm = async () => {
+  const name = document.getElementById('dm-username-input').value.trim();
+  const errEl = document.getElementById('dm-error');
+  errEl.textContent = '';
+  if (!name) { errEl.textContent = 'Enter a username'; return; }
+  if (name === currentUser.displayName) { errEl.textContent = "That's you!"; return; }
+  // Look up user by name
+  const q = query(collection(db, 'users'), where('name', '==', name));
+  const snap = await getDocs(q);
+  if (snap.empty) { errEl.textContent = 'User not found'; return; }
+  const other = snap.docs[0].data();
+  const cid = dmId(currentUser.uid, other.uid);
+  const myPfp = localStorage.getItem('vcg_pfp_' + currentUser.uid) || '👤';
+  const theirPfp = localStorage.getItem('vcg_pfp_' + other.uid) || '👤';
+  await setDoc(doc(db, 'dms', cid), {
+    [currentUser.uid + '_name']: currentUser.displayName,
+    [currentUser.uid + '_pfp']:  myPfp,
+    [other.uid + '_name']: other.name,
+    [other.uid + '_pfp']:  theirPfp,
+  }, { merge: true });
+  document.getElementById('dm-overlay').classList.remove('open');
+  switchChannel(other.uid, other.name);
+};
 
 window.sendMsg = async () => {
   if (!currentUser) return;
@@ -527,7 +830,8 @@ window.sendMsg = async () => {
   const text  = input.value.trim();
   if (!text) return;
   input.value = '';
-  await addDoc(collection(db, 'messages'), {
+  const colPath = activeChannel === 'main' ? 'messages' : `dms/${dmId(currentUser.uid, activeChannel)}/messages`;
+  await addDoc(collection(db, colPath), {
     text, uid: currentUser.uid,
     name: currentUser.displayName || currentUser.email,
     ts: serverTimestamp()
@@ -882,7 +1186,8 @@ function showPage(name) {
 }
 
 function navigate(name) {
-  history.pushState({ page: name }, '', name === 'home' ? '/' : '/' + name);
+  // Don't push a URL for tab changes — only game launches get their own URL
+  history.replaceState({ page: name }, '', '/');
   document.title = 'verycoolgames493';
   showPage(name);
 }
@@ -890,8 +1195,7 @@ function navigate(name) {
 // Handle browser back/forward
 window.addEventListener('popstate', () => {
   const path = location.pathname.replace(/^\//, '');
-  if (!path || path === 'home') { showPage('home'); return; }
-  if (['games','favs','news','proxy','chat'].includes(path)) { showPage(path); return; }
+  // Only treat it as a game if it matches a known folder
   const g = games.find(x => x.folder === path);
   if (g) launchGame(g);
   else showPage('home');
@@ -959,8 +1263,8 @@ window.addEventListener('popstate', () => {
 })();
 (function boot() {
   const path = location.pathname.replace(/^\//, '');
-  if (!path || path === 'home') { showPage('home'); return; }
-  if (['games','favs','news','proxy','chat'].includes(path)) { showPage(path); return; }
+  if (!path) { showPage('home'); return; }
+  // Only route if it's a known game folder
   const g = games.find(x => x.folder === path);
   if (g) { launchGame(g); return; }
   showPage('home');
