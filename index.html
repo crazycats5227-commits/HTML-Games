@@ -339,6 +339,26 @@
   }
   .new-dm-btn:hover { border-color: #bf4dff; color: #bf4dff; }
 
+  .sidebar-add-btn {
+    background: none; border: 1px solid #3d0077; color: #8855bb;
+    font-size: 0.9rem; width: 20px; height: 20px; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    margin-left: 6px; transition: all 0.2s; line-height: 1; padding: 0;
+  }
+  .sidebar-add-btn:hover { border-color: #bf4dff; color: #bf4dff; }
+  .dm-item { position: relative; }
+  .unread-dot {
+    width: 8px; height: 8px; background: #3399ff; border-radius: 50%;
+    flex-shrink: 0; margin-left: auto; box-shadow: 0 0 6px #3399ffaa;
+  }
+  .group-members-label { font-size: 0.72rem; color: #8855bb; }
+  .group-member-tags { display: flex; flex-wrap: wrap; gap: 6px; min-height: 28px; }
+  .group-tag {
+    background: #3d0077; border-radius: 20px; padding: 3px 10px 3px 10px;
+    font-size: 0.75rem; color: #ddb0ff; display: flex; align-items: center; gap: 6px;
+  }
+  .group-tag-remove { background: none; border: none; color: #bf4dff; font-size: 0.8rem; padding: 0; line-height: 1; }
+
   /* Custom cursor */
   *, *::before, *::after { cursor: none !important; }
   #cur-dot {
@@ -449,7 +469,7 @@
 
       <div class="acct-card">
         <div class="acct-card-title">Change Username</div>
-        <input class="auth-input" id="new-username" placeholder="New username" maxlength="20">
+        <input class="auth-input" id="new-username" placeholder="New username (max 16 chars)" maxlength="16">
         <button class="acct-action-btn" onclick="changeUsername()">Save Username</button>
         <div class="acct-msg" id="username-msg"></div>
       </div>
@@ -480,14 +500,15 @@
   <div id="chat-app" style="display:none">
     <div class="chat-wrap">
       <div class="chat-sidebar">
-        <div class="chat-channel active" id="ch-main" onclick="switchChannel('main')">💬 Main Chat</div>
-        <div class="chat-sidebar-label">Direct Messages</div>
+        <div class="chat-channel active" id="ch-main" onclick="switchChannel('main')">Main Chat</div>
+        <div class="chat-sidebar-label">Direct Messages <button class="sidebar-add-btn" onclick="openNewDm()" title="New DM">+</button></div>
         <div class="dm-list" id="dm-list"></div>
-        <button class="new-dm-btn" onclick="openNewDm()">+ New DM</button>
+        <div class="chat-sidebar-label">Group Messages <button class="sidebar-add-btn" onclick="openNewGroup()" title="New Group">+</button></div>
+        <div class="dm-list" id="group-list"></div>
       </div>
       <div class="chat-main">
         <div class="chat-header">
-          <span id="chat-channel-title">💬 Main Chat</span>
+          <span id="chat-channel-title">Main Chat</span>
         </div>
         <div class="chat-messages" id="chat-messages"></div>
         <div class="chat-input-bar">
@@ -502,7 +523,7 @@
 <!-- New DM modal -->
 <div class="auth-overlay" id="dm-overlay">
   <div class="auth-box">
-    <h2>💬 New DM</h2>
+    <h2>New DM</h2>
     <input class="auth-input" id="dm-username-input" placeholder="Enter exact username">
     <div class="auth-error" id="dm-error"></div>
     <div style="display:flex;gap:8px;">
@@ -512,14 +533,33 @@
   </div>
 </div>
 
+<!-- New Group modal -->
+<div class="auth-overlay" id="group-overlay">
+  <div class="auth-box">
+    <h2>New Group</h2>
+    <input class="auth-input" id="group-name-input" placeholder="Group name" maxlength="24">
+    <div class="group-members-label">Add members (up to 7 others)</div>
+    <div id="group-member-tags" class="group-member-tags"></div>
+    <div style="display:flex;gap:8px;">
+      <input class="auth-input" id="group-member-input" placeholder="Username to add" style="flex:1">
+      <button class="auth-submit" style="width:auto;padding:10px 14px;" onclick="addGroupMember()">Add</button>
+    </div>
+    <div class="auth-error" id="group-error"></div>
+    <div style="display:flex;gap:8px;margin-top:4px;">
+      <button class="auth-submit" style="background:#3d0077" onclick="document.getElementById('group-overlay').classList.remove('open')">Cancel</button>
+      <button class="auth-submit" onclick="createGroup()">Create Group</button>
+    </div>
+  </div>
+</div>
+
 <div class="auth-overlay" id="auth-overlay">
   <div class="auth-box">
-    <h2>💬 Join the Chat</h2>
+    <h2>Join the Chat</h2>
     <div class="auth-tabs">
       <button class="auth-tab active" id="atab-login" onclick="switchAuthTab('login')">Log In</button>
       <button class="auth-tab" id="atab-signup" onclick="switchAuthTab('signup')">Sign Up</button>
     </div>
-    <input class="auth-input" id="auth-username" placeholder="Username" maxlength="20" style="display:none">
+    <input class="auth-input" id="auth-username" placeholder="Username (max 16 chars)" maxlength="16" style="display:none">
     <input class="auth-input" id="auth-email" type="email" placeholder="Email">
     <input class="auth-input" id="auth-password" type="password" placeholder="Password" onkeydown="if(event.key==='Enter')submitAuth()">
     <div class="auth-error" id="auth-error"></div>
@@ -577,35 +617,32 @@ const auth = getAuth(app);
 const db   = getFirestore(app);
 
 const PFP_OPTIONS = ['🐱','🐶','🐸','🦊','🐼','🐨','🦁','🐯','🐺','🤖','👾','🎮','🌙','⭐','🔥','💜'];
-let currentUser = null;
-let msgsUnsub   = null;
-let authMode    = 'login';
-let activeChannel = 'main'; // 'main' or a DM uid
-let activeDmName  = '';
-let dmUnsubs = {};
+let currentUser   = null;
+let msgsUnsub     = null;
+let authMode      = 'login';
+let activeChannel = 'main';  // 'main', a DM uid, or 'group_<id>'
+let activeChannelName = '';
+let groupMembers  = [];  // pending members for group creation modal
 
 // ── Auth state ──
 onAuthStateChanged(auth, async user => {
   currentUser = user;
   updateNavAvatar();
   if (user) {
-    // Always upsert the user doc — handles new signups + old accounts with no doc
     const name = user.displayName || user.email;
     await setDoc(doc(db, 'users', user.uid), { name, uid: user.uid }, { merge: true });
-
     document.getElementById('acct-menu-signout').style.display = 'block';
     document.getElementById('acct-menu-signin').style.display = 'none';
     document.getElementById('acct-menu-name').textContent = name;
-    // Chat
     document.getElementById('chat-gate').style.display = 'none';
     document.getElementById('chat-app').style.display = 'block';
     document.getElementById('auth-overlay').classList.remove('open');
-    // Account page
     document.getElementById('acct-page-gate').style.display = 'none';
     document.getElementById('acct-page-app').style.display = 'block';
     loadAccountSettings();
     startChat();
     loadDmList();
+    loadGroupList();
   } else {
     document.getElementById('acct-menu-signout').style.display = 'none';
     document.getElementById('acct-menu-signin').style.display = 'block';
@@ -621,16 +658,14 @@ onAuthStateChanged(auth, async user => {
 function updateNavAvatar() {
   const el = document.getElementById('nav-avatar');
   if (!currentUser) { el.textContent = '?'; return; }
-  const pfp = localStorage.getItem('vcg_pfp_' + currentUser.uid) || '👤';
-  el.textContent = pfp;
+  el.textContent = localStorage.getItem('vcg_pfp_' + currentUser.uid) || '👤';
 }
 
 // ── Account menu ──
 window.toggleAcctMenu = () => document.getElementById('acct-menu').classList.toggle('open');
 window.closeAcctMenu  = () => document.getElementById('acct-menu').classList.remove('open');
 document.addEventListener('click', e => {
-  if (!e.target.closest('#acct-menu') && !e.target.closest('#nav-acct-btn'))
-    closeAcctMenu();
+  if (!e.target.closest('#acct-menu') && !e.target.closest('#nav-acct-btn')) closeAcctMenu();
 });
 
 // ── Auth ──
@@ -645,7 +680,7 @@ window.switchAuthTab = mode => {
 window.submitAuth = async () => {
   const email    = document.getElementById('auth-email').value.trim();
   const password = document.getElementById('auth-password').value;
-  const username = document.getElementById('auth-username').value.trim();
+  const username = document.getElementById('auth-username').value.trim().slice(0, 16);
   const errEl    = document.getElementById('auth-error');
   errEl.textContent = '';
   try {
@@ -661,14 +696,12 @@ window.submitAuth = async () => {
     errEl.textContent = e.message.replace('Firebase: ','').replace(/\(.*\)\.?/,'').trim();
   }
 };
-window.signOut = async () => {
-  await fbSignOut(auth);
-};
+window.signOut = async () => { await fbSignOut(auth); };
 
 // ── Account settings ──
 function loadAccountSettings() {
   if (!currentUser) return;
-  const pfp = localStorage.getItem('vcg_pfp_' + currentUser.uid) || '👤';
+  const pfp  = localStorage.getItem('vcg_pfp_' + currentUser.uid) || '👤';
   document.getElementById('settings-pfp').textContent = pfp;
   const opts = document.getElementById('pfp-options');
   opts.innerHTML = '';
@@ -686,9 +719,8 @@ function loadAccountSettings() {
     opts.appendChild(btn);
   });
 }
-
 window.changeUsername = async () => {
-  const val = document.getElementById('new-username').value.trim();
+  const val = document.getElementById('new-username').value.trim().slice(0, 16);
   const msg = document.getElementById('username-msg');
   if (!val) { msg.className='acct-msg err'; msg.textContent='Enter a username'; return; }
   try {
@@ -698,7 +730,6 @@ window.changeUsername = async () => {
     msg.className='acct-msg ok'; msg.textContent='✓ Username updated!';
   } catch(e) { msg.className='acct-msg err'; msg.textContent=e.message; }
 };
-
 window.changePassword = async () => {
   const val = document.getElementById('new-password').value;
   const msg = document.getElementById('password-msg');
@@ -708,52 +739,61 @@ window.changePassword = async () => {
     msg.className='acct-msg ok'; msg.textContent='✓ Password updated!';
     document.getElementById('new-password').value = '';
   } catch(e) {
-    if (e.code === 'auth/requires-recent-login') {
-      msg.className='acct-msg err'; msg.textContent='Please sign out and sign back in first.';
-    } else { msg.className='acct-msg err'; msg.textContent=e.message; }
+    msg.className='acct-msg err';
+    msg.textContent = e.code === 'auth/requires-recent-login' ? 'Sign out and sign back in first.' : e.message;
   }
 };
-
 window.deleteAccount = async () => {
-  if (!confirm('Are you sure? This permanently deletes your account and cannot be undone.')) return;
+  if (!confirm('Permanently delete your account? This cannot be undone.')) return;
   const msg = document.getElementById('danger-msg');
   try {
     await deleteDoc(doc(db, 'users', currentUser.uid));
     await deleteUser(currentUser);
   } catch(e) {
-    if (e.code === 'auth/requires-recent-login') {
-      msg.className='acct-msg err'; msg.textContent='Please sign out and sign back in first.';
-    } else { msg.className='acct-msg err'; msg.textContent=e.message; }
+    msg.className='acct-msg err';
+    msg.textContent = e.code === 'auth/requires-recent-login' ? 'Sign out and sign back in first.' : e.message;
   }
 };
 
-// ── Chat & DMs ──
-function dmId(uid1, uid2) {
-  return [uid1, uid2].sort().join('_');
-}
+// ── Helpers ──
+function dmId(uid1, uid2) { return [uid1, uid2].sort().join('_'); }
+function myPfp() { return localStorage.getItem('vcg_pfp_' + currentUser.uid) || '👤'; }
+function esc(t) { return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
-function startChat() {
-  if (!currentUser) return;
-  switchChannel('main');
-}
+// ── Read tracking (localStorage) ──
+function readKey(ch) { return 'vcg_read_' + currentUser.uid + '_' + ch; }
+function markRead(ch) { localStorage.setItem(readKey(ch), Date.now().toString()); }
+function lastRead(ch) { return parseInt(localStorage.getItem(readKey(ch)) || '0'); }
 
-window.switchChannel = (ch, dmName) => {
-  activeChannel = ch;
-  activeDmName  = dmName || '';
+// ── Chat ──
+function startChat() { if (currentUser) switchChannel('main'); }
+
+window.switchChannel = (ch, chName) => {
+  activeChannel     = ch;
+  activeChannelName = chName || '';
   if (msgsUnsub) { msgsUnsub(); msgsUnsub = null; }
+  markRead(ch);
 
-  // Update sidebar active state
+  // Sidebar active states
   document.getElementById('ch-main').classList.toggle('active', ch === 'main');
   document.querySelectorAll('.dm-item').forEach(el => {
-    el.classList.toggle('active', el.dataset.uid === ch);
+    el.classList.toggle('active', el.dataset.ch === ch);
+    if (el.dataset.ch === ch) { const dot = el.querySelector('.unread-dot'); if (dot) dot.remove(); }
   });
 
-  // Update header
-  document.getElementById('chat-channel-title').textContent =
-    ch === 'main' ? '💬 Main Chat' : `💬 DM — ${dmName || ch}`;
+  // Header
+  const title = ch === 'main' ? 'Main Chat'
+    : ch.startsWith('group_') ? `${chName}`
+    : `DM — ${chName || ch}`;
+  document.getElementById('chat-channel-title').textContent = title;
+  document.getElementById('chat-input').placeholder = ch === 'main' ? 'Say something...' : `Message ${chName || ''}...`;
 
-  // Subscribe to messages
-  const colPath = ch === 'main' ? 'messages' : `dms/${dmId(currentUser.uid, ch)}/messages`;
+  // Messages path
+  let colPath;
+  if (ch === 'main') colPath = 'messages';
+  else if (ch.startsWith('group_')) colPath = `groups/${ch.replace('group_','')}/messages`;
+  else colPath = `dms/${dmId(currentUser.uid, ch)}/messages`;
+
   const q = query(collection(db, colPath), orderBy('ts','asc'), limit(100));
   msgsUnsub = onSnapshot(q, snap => {
     const box = document.getElementById('chat-messages');
@@ -765,8 +805,7 @@ window.switchChannel = (ch, dmName) => {
       const time = data.ts?.toDate ? data.ts.toDate().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : '';
       const div  = document.createElement('div');
       div.className = 'chat-msg ' + (mine ? 'mine' : 'theirs');
-      div.innerHTML = `
-        ${!mine ? `<div class="msg-name">${esc(data.name)}</div>` : ''}
+      div.innerHTML = `${!mine ? `<div class="msg-name">${esc(data.name)}</div>` : ''}
         <div class="msg-bubble">${esc(data.text)}</div>
         <div class="msg-time">${time}</div>`;
       box.appendChild(div);
@@ -775,21 +814,48 @@ window.switchChannel = (ch, dmName) => {
   });
 };
 
+window.sendMsg = async () => {
+  if (!currentUser) return;
+  const input = document.getElementById('chat-input');
+  const text  = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  let colPath;
+  if (activeChannel === 'main') colPath = 'messages';
+  else if (activeChannel.startsWith('group_')) colPath = `groups/${activeChannel.replace('group_','')}/messages`;
+  else colPath = `dms/${dmId(currentUser.uid, activeChannel)}/messages`;
+
+  const ts = serverTimestamp();
+  await addDoc(collection(db, colPath), { text, uid: currentUser.uid, name: currentUser.displayName || currentUser.email, ts });
+
+  // Update lastMsg on DM/group list entry for sorting
+  if (activeChannel !== 'main') {
+    const key = activeChannel.startsWith('group_') ? activeChannel.replace('group_','') : null;
+    if (key) {
+      await setDoc(doc(db, 'groups', key), { lastTs: Date.now() }, { merge: true });
+    } else {
+      await setDoc(doc(db, 'users', currentUser.uid, 'dmList', activeChannel), { lastTs: Date.now() }, { merge: true });
+    }
+  }
+};
+
+// ── DM List ──
 function loadDmList() {
   if (!currentUser) return;
   const list = document.getElementById('dm-list');
-  // Listen to this user's own DM index — much more reliable than scanning all dms
-  onSnapshot(collection(db, 'users', currentUser.uid, 'dmList'), snap => {
+  onSnapshot(query(collection(db, 'users', currentUser.uid, 'dmList'), orderBy('lastTs','desc')), snap => {
     list.innerHTML = '';
     snap.forEach(d => {
-      const data = d.data();
+      const data      = d.data();
       const otherUid  = data.uid;
       const otherName = data.name || otherUid;
       const otherPfp  = data.pfp  || '👤';
+      const isActive  = activeChannel === otherUid;
+      const isUnread  = !isActive && (data.lastTs || 0) > lastRead(otherUid);
       const item = document.createElement('div');
-      item.className = 'dm-item' + (activeChannel === otherUid ? ' active' : '');
-      item.dataset.uid = otherUid;
-      item.innerHTML = `<span class="dm-avatar">${otherPfp}</span><span>${esc(otherName)}</span>`;
+      item.className = 'dm-item' + (isActive ? ' active' : '');
+      item.dataset.ch = otherUid;
+      item.innerHTML = `<span class="dm-avatar">${otherPfp}</span><span>${esc(otherName)}</span>${isUnread ? '<div class="unread-dot"></div>' : ''}`;
       item.onclick = () => switchChannel(otherUid, otherName);
       list.appendChild(item);
     });
@@ -801,58 +867,108 @@ window.openNewDm = () => {
   document.getElementById('dm-error').textContent = '';
   document.getElementById('dm-overlay').classList.add('open');
 };
-
 window.startDm = async () => {
-  const name = document.getElementById('dm-username-input').value.trim();
+  const name  = document.getElementById('dm-username-input').value.trim();
   const errEl = document.getElementById('dm-error');
   errEl.textContent = '';
   if (!name) { errEl.textContent = 'Enter a username'; return; }
   if (name === currentUser.displayName) { errEl.textContent = "That's you!"; return; }
-  const q = query(collection(db, 'users'), where('name', '==', name));
-  const snap = await getDocs(q);
+  const snap = await getDocs(query(collection(db, 'users'), where('name','==',name)));
   if (snap.empty) { errEl.textContent = 'User not found'; return; }
-  const other   = snap.docs[0].data();
-  const cid     = dmId(currentUser.uid, other.uid);
-  const myPfp   = localStorage.getItem('vcg_pfp_' + currentUser.uid) || '👤';
+  const other    = snap.docs[0].data();
+  const cid      = dmId(currentUser.uid, other.uid);
   const theirPfp = localStorage.getItem('vcg_pfp_' + other.uid) || '👤';
-
-  // Write the DM conversation doc
   await setDoc(doc(db, 'dms', cid), {
-    [currentUser.uid + '_name']: currentUser.displayName,
-    [currentUser.uid + '_pfp']:  myPfp,
-    [other.uid + '_name']: other.name,
-    [other.uid + '_pfp']:  theirPfp,
+    [currentUser.uid+'_name']: currentUser.displayName, [currentUser.uid+'_pfp']: myPfp(),
+    [other.uid+'_name']: other.name, [other.uid+'_pfp']: theirPfp,
   }, { merge: true });
-
-  // Write to BOTH users' dmList so both can see it in their sidebar
-  await setDoc(doc(db, 'users', currentUser.uid, 'dmList', other.uid), {
-    uid: other.uid, name: other.name, pfp: theirPfp
-  });
-  await setDoc(doc(db, 'users', other.uid, 'dmList', currentUser.uid), {
-    uid: currentUser.uid, name: currentUser.displayName, pfp: myPfp
-  });
-
+  const now = Date.now();
+  await setDoc(doc(db,'users',currentUser.uid,'dmList',other.uid), { uid:other.uid, name:other.name, pfp:theirPfp, lastTs:now });
+  await setDoc(doc(db,'users',other.uid,'dmList',currentUser.uid), { uid:currentUser.uid, name:currentUser.displayName, pfp:myPfp(), lastTs:now });
   document.getElementById('dm-overlay').classList.remove('open');
   switchChannel(other.uid, other.name);
 };
 
-window.sendMsg = async () => {
+// ── Group list ──
+function loadGroupList() {
   if (!currentUser) return;
-  const input = document.getElementById('chat-input');
-  const text  = input.value.trim();
-  if (!text) return;
-  input.value = '';
-  const colPath = activeChannel === 'main' ? 'messages' : `dms/${dmId(currentUser.uid, activeChannel)}/messages`;
-  await addDoc(collection(db, colPath), {
-    text, uid: currentUser.uid,
-    name: currentUser.displayName || currentUser.email,
-    ts: serverTimestamp()
+  const list = document.getElementById('group-list');
+  onSnapshot(query(collection(db,'users',currentUser.uid,'groupList'), orderBy('lastTs','desc')), snap => {
+    list.innerHTML = '';
+    snap.forEach(d => {
+      const data     = d.data();
+      const gid      = data.gid;
+      const gname    = data.name || 'Group';
+      const chKey    = 'group_' + gid;
+      const isActive = activeChannel === chKey;
+      const isUnread = !isActive && (data.lastTs || 0) > lastRead(chKey);
+      const item = document.createElement('div');
+      item.className = 'dm-item' + (isActive ? ' active' : '');
+      item.dataset.ch = chKey;
+      item.innerHTML = `<span class="dm-avatar">👥</span><span>${esc(gname)}</span>${isUnread ? '<div class="unread-dot"></div>' : ''}`;
+      item.onclick = () => switchChannel(chKey, gname);
+      list.appendChild(item);
+    });
   });
-};
-
-function esc(t) {
-  return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
+
+// Group creation
+window.openNewGroup = () => {
+  groupMembers = [];
+  document.getElementById('group-name-input').value = '';
+  document.getElementById('group-member-input').value = '';
+  document.getElementById('group-error').textContent = '';
+  document.getElementById('group-member-tags').innerHTML = '';
+  document.getElementById('group-overlay').classList.add('open');
+};
+window.addGroupMember = async () => {
+  const name  = document.getElementById('group-member-input').value.trim();
+  const errEl = document.getElementById('group-error');
+  errEl.textContent = '';
+  if (!name) return;
+  if (name === currentUser.displayName) { errEl.textContent = "That's you — you're added automatically"; return; }
+  if (groupMembers.length >= 7) { errEl.textContent = 'Max 7 others (8 total including you)'; return; }
+  if (groupMembers.find(m => m.name === name)) { errEl.textContent = 'Already added'; return; }
+  const snap = await getDocs(query(collection(db,'users'), where('name','==',name)));
+  if (snap.empty) { errEl.textContent = 'User not found'; return; }
+  const other = snap.docs[0].data();
+  groupMembers.push(other);
+  document.getElementById('group-member-input').value = '';
+  renderGroupTags();
+};
+function renderGroupTags() {
+  const container = document.getElementById('group-member-tags');
+  container.innerHTML = '';
+  groupMembers.forEach((m, i) => {
+    const tag = document.createElement('div');
+    tag.className = 'group-tag';
+    tag.innerHTML = `${esc(m.name)} <button class="group-tag-remove" onclick="removeGroupMember(${i})">✕</button>`;
+    container.appendChild(tag);
+  });
+}
+window.removeGroupMember = i => { groupMembers.splice(i, 1); renderGroupTags(); };
+
+window.createGroup = async () => {
+  const gname = document.getElementById('group-name-input').value.trim();
+  const errEl = document.getElementById('group-error');
+  errEl.textContent = '';
+  if (!gname) { errEl.textContent = 'Enter a group name'; return; }
+  if (groupMembers.length === 0) { errEl.textContent = 'Add at least one member'; return; }
+  // Create group doc
+  const allMembers = [{ uid: currentUser.uid, name: currentUser.displayName }, ...groupMembers];
+  const gRef = await addDoc(collection(db, 'groups'), {
+    name: gname, members: allMembers.map(m => m.uid),
+    createdBy: currentUser.uid, lastTs: Date.now()
+  });
+  const gid = gRef.id;
+  const now = Date.now();
+  // Add group to each member's groupList
+  for (const m of allMembers) {
+    await setDoc(doc(db,'users',m.uid,'groupList',gid), { gid, name: gname, lastTs: now });
+  }
+  document.getElementById('group-overlay').classList.remove('open');
+  switchChannel('group_' + gid, gname);
+};
 </script>
 
 <script>
